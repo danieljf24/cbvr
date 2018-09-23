@@ -19,7 +19,7 @@ deactivate
 ```
 
 #### Required Data
-1. Download track_1_shows(6G) and track_2_movies(9.0G) datasets from [here](http://39.104.114.128/hulu_mm_2018/) or [Baidu Pan](https://pan.baidu.com/s/1v86WP7u-tcuO2qzh0CVAqQ#list/path=%2Fcbvr_data). If you have already downloaded the datasets provided by Hulu organizers, use the script [do_feature_convert.sh](do_feature_convert.sh) to convert the dataset to fit for our code.
+1. Download track_1_shows(6G) and track_2_movies(9.0G) datasets from [here](http://39.104.114.128/cbvr_mm_2018/) or [Baidu Pan](https://pan.baidu.com/s/1v86WP7u-tcuO2qzh0CVAqQ#list/path=%2Fcbvr_data). If you have already downloaded the datasets provided by Hulu organizers, use the script [do_feature_convert.sh](do_feature_convert.sh) to convert the dataset to fit for our code.
 2. Run the following script to extract the downloaded data. The extracted data is placed in `$HOME/VisualSearch/`.
 ```shell
 ROOTPATH=$HOME/VisualSearch

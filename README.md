@@ -19,7 +19,7 @@ deactivate
 ```
 
 #### Required Data
-1. Download track_1_shows(6G) and track_2_movies(9.0G) datasets from [here](http://39.104.114.128/cbvr_mm_2018/) or [Baidu Pan](https://pan.baidu.com/s/1v86WP7u-tcuO2qzh0CVAqQ#list/path=%2Fcbvr_data). If you have already downloaded the datasets provided by Hulu organizers, use the script [do_feature_convert.sh](do_feature_convert.sh) to convert the dataset to fit for our code.
+1. Download track_1_shows(6G) and track_2_movies(9.0G) datasets from [Google Drive](https://drive.google.com/open?id=1V9eZbbVEV6AQlTYqqjfrz0Lcpeqhk6Xn) or [Baidu Pan](https://pan.baidu.com/s/1v86WP7u-tcuO2qzh0CVAqQ#list/path=%2Fcbvr_data) or [here](http://39.104.114.128/cbvr_mm_2018/). If you have already downloaded the datasets provided by Hulu organizers, use the script [do_feature_convert.sh](do_feature_convert.sh) to convert the dataset to fit for our code.
 2. Run the following script to extract the downloaded data. The extracted data is placed in `$HOME/VisualSearch/`.
 ```shell
 ROOTPATH=$HOME/VisualSearch
@@ -32,7 +32,7 @@ tar zxf track_2_movies.tar.gz -C $ROOTPATH
 
 ## Getting started
 #### Augmentation for frame-level features
-![image](frame_aug.jpg)
+![image](fig/frame_aug.jpg)
 
 Run the following script to train and evaluate the model with augmentation for frame-level features.
 ```shell
@@ -49,7 +49,7 @@ Running the script will do the following things:
 3. Evaluate the final model on the validate set and generate predicted results on the test set. Note that we as participants have no access to the ground-truth of the test set. Please contact the [task organizers](https://github.com/cbvrp-acmmm-2018/cbvrp-acmmm-2018) in case you may want to evaluate our model or your own model on the test set.
 
 #### Augmentation for frame-level features
-![image](video_aug.jpg)
+![image](fig/video_aug.jpg)
 
 Run the following script to train and evaluate the model with augmentation for video-level features.
 ```shell

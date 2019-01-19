@@ -120,7 +120,10 @@ def score2result(scores, test_video_list, cand_video_list):
         score_list = scores[i]
         cand_video_score_list = zip(cand_video_list, score_list)
         sorted_cand_video_score_list = sorted(cand_video_score_list, key=lambda v:v[1], reverse=True)
-        video2predrank[test_video] = [x[0] for x in sorted_cand_video_score_list]
+        #video2predrank[test_video] = [x[0] for x in sorted_cand_video_score_list]
+        predrank = [x[0] for x in sorted_cand_video_score_list]
+        predrank.remove(test_video)
+        video2predrank[test_video] = predrank
     return video2predrank
 
 

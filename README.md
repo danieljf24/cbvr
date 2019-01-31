@@ -48,7 +48,7 @@ Running the script will do the following things:
 2. Train the feature re-learning model with augmentation for frame-level features and select a checkpoint that performs best on the validation set as the final model.
 3. Evaluate the final model on the validate set and generate predicted results on the test set. Note that we as participants have no access to the ground-truth of the test set. Please contact the [task organizers](https://github.com/cbvrp-acmmm-2018/cbvrp-acmmm-2018) in case you may want to evaluate our model or your own model on the test set.
 
-#### Augmentation for frame-level features
+#### Augmentation for video-level features
 ![image](fig/video_aug.jpg)
 
 Run the following script to train and evaluate the model with augmentation for video-level features.

@@ -1,6 +1,7 @@
-# Feature Re-Learning with Data Augmentation for Content-based Video Recommendation
+# Feature Re-Learning with Data Augmentation for Video Relevance Prediction
 
-We release source code of our winning entry for the [Hulu Content-based Video Relevance Prediction Challenge](https://github.com/cbvrp-acmmm-2018/cbvrp-acmmm-2018) at the ACM Multimedia 2018 conference. The solution is mainly a feature re-learning model enhanced by data augmentation that works for both frame-level and video-level features.
+
+The release source code of our TKDE paper [Feature Re-Learning with Data Augmentation for Content-based Video Recommendation](https://dl.acm.org/doi/abs/10.1145/3240508.3266441). We proposed a feature re-learning model enhanced by data augmentation that works for both frame-level and video-level features and negative-enhanced triplet ranking loss. It is also our winning entry for the [Hulu Content-based Video Relevance Prediction Challenge](https://github.com/cbvrp-acmmm-2018/cbvrp-acmmm-2018) at the ACM Multimedia 2018 conference. 
 
 
 ## Requirements
@@ -34,19 +35,21 @@ tar zxf track_2_movies.tar.gz -C $ROOTPATH
 #### Augmentation for frame-level features
 ![image](fig/frame_aug.jpg)
 
-Run the following script to train and evaluate the model with augmentation for frame-level features.
+Run the following script to train and evaluate the model with augmentation for frame-level features and the negative-enhanced triplet ranking loss.
 ```shell
 source ~/cbvr/bin/activate
-# on track_1_shows with stride=4
-./do_all_frame_level.sh track_1_shows inception-pool3 4
-# on track_2_shows with stride=4
-./do_all_frame_level.sh track_2_movies inception-pool3 4
+# on track_1_shows and track_2_movies with stride=12
+stride=12
+loss=netrl  # use trl if you would like to use common triplet ranking loss
+./do_all_frame_level.sh track_1_shows inception-pool3 $stride $loss
+./do_all_frame_level.sh track_2_movies inception-pool3 $stride $loss
 deactive
 ```
 Running the script will do the following things:
 1. Generate augmented frame-level features and operate mean pooling to obtain video-level features in advance.
 2. Train the feature re-learning model with augmentation for frame-level features and select a checkpoint that performs best on the validation set as the final model.
-3. Evaluate the final model on the validate set and generate predicted results on the test set. Note that we as participants have no access to the ground-truth of the test set. Please contact the [task organizers](https://github.com/cbvrp-acmmm-2018/cbvrp-acmmm-2018) in case you may want to evaluate our model or your own model on the test set.
+3. Evaluate the final model on the validate set and generate predicted results on the test set. Both two relevance prediction strategies are performed. Note that we as participants have no access to the ground-truth of the test set. Please contact the [task organizers](https://github.com/cbvrp-acmmm-2018/cbvrp-acmmm-2018) in case you may want to evaluate our model or your own model on the test set.
+
 
 #### Augmentation for video-level features
 ![image](fig/video_aug.jpg)
@@ -55,9 +58,9 @@ Run the following script to train and evaluate the model with augmentation for v
 ```shell
 source ~/cbvr/bin/activate
 # on track_1_shows
-./do_all_video_level.sh track_1_shows c3d-pool5
+./do_all_video_level.sh track_1_shows c3d-pool5 netrl
 # on track_2_movies
-./do_all_video_level.sh track_2_movies c3d-pool5
+./do_all_video_level.sh track_2_movies c3d-pool5 netrl
 deactive
 ```
 Running the script will do the following things:
@@ -73,7 +76,7 @@ The proposed augmentation essentially can be used for other video-related tasks.
 
 
 ## Citation
-If you find the package useful, please consider citing our MM'18 paper:
+If you find the package useful, please consider citing our following papers:
 ```
 @inproceedings{mm2018-cbvrp-dong,
 title = {Feature Re-Learning with Data Augmentation for Content-based Video Recommendation},
@@ -82,7 +85,20 @@ doi = {10.1145/3240508.3266441},
 year = {2018},
 booktitle = {ACM Multimedia},
 }
+
+@article{dong2019feature,
+  title={Feature Re-Learning with Data Augmentation for Video Relevance Prediction},
+  author={Dong, Jianfeng and Wang, Xun and Zhang, Leimin and Xu, Chaoxi and Yang, Gang and Li, Xirong},
+  journal={IEEE Transactions on Knowledge and Data Engineering},
+  doi={10.1109/TKDE.2019.2947442}
+  year={2019},
+  publisher={IEEE}
+}
+
 ```
+
+
+
 
 ## Acknowledgements
 We are grateful to HULU organizers for the challenge organization effort.

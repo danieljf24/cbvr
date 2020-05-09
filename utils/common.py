@@ -3,7 +3,8 @@ import os
 import time
 
 
-ROOT_PATH = os.path.join(os.environ['HOME'], 'VisualSearch')
+#ROOT_PATH = os.path.join(os.environ['HOME'], 'VisualSearch')
+ROOT_PATH = '/media/daniel/D/zlm/VisualSearch/cbvr_tkde'
 
 
 def makedirsforfile(filename):

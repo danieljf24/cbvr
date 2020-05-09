@@ -1,3 +1,4 @@
+import os
 import csv
 
 def read_video_set(filepath):
@@ -58,4 +59,42 @@ def read_dict(filepath):
 def write_dict(filepath, dict_data):
     f = open(filepath,'w')  
     f.write(str(dict_data))  
-    f.close()  
+    f.close()
+
+
+def get_count(path):
+    train=os.path.join(path,'split/train.csv')
+    val= os.path.join(path,'split/val.csv')
+    id_list=[]
+    train_reader=csv.reader(open(train))
+    val_reader=csv.reader(open(val))
+
+    for vid in train_reader:
+        id_list.append(vid[0])
+    for vid in val_reader:
+        id_list.append(vid[0])
+    id_set = set(id_list)
+
+    rele_train=os.path.join(path,'relevance_train.csv')
+    rele_val = os.path.join(path,'relevance_val.csv')
+    rele_train_reader=csv.reader(open(rele_train))
+    rele_val_reader=csv.reader(open(rele_val))
+    
+    output_file = os.path.join(path, 'rel_index.csv')
+    with open(output_file, 'w') as csvfile:
+        writew = csv.writer(csvfile)
+        for rele in rele_train_reader:
+            index_list=[]
+            for rele_id in (rele[1:]):
+                if rele_id in id_set:
+                    index_list.append(id_list.index(rele_id))
+            writew.writerow(index_list)
+
+        for rele in rele_val_reader:
+            index_list=[]
+            for rele_id in rele[1:]:
+                if rele_id in id_set:
+                    index_list.append(id_list.index(rele_id))
+            writew.writerow(index_list)
+
+    print('write out: %s' % output_file)

@@ -32,10 +32,12 @@ def main():
     parser.add_argument('--feature', default='inception-pool3', type=str, help="video feature.")
     parser.add_argument('--embed_size', default=1024, type=int, help='Dimensionality of the video embedding.')
 
-    parser.add_argument('--loss', default='mrl', type=str, help='loss function.')
+    parser.add_argument('--loss', default='trl', type=str, help='loss function. (trl|netrl)')
+    parser.add_argument('--alpha', default=1.0, type=float, help='loss weight for irrelevant loss')
     parser.add_argument("--cost_style", default='sum', type=str,  help="cost_style (sum|mean)")
     parser.add_argument('--max_violation', action='store_true', help='Use max instead of sum in the rank loss.')
     parser.add_argument('--margin', default=0.2, type=float, help='Rank loss margin.')
+    parser.add_argument('--margin_irel', default=0.05, type=float, help='Irrelevant loss margin.')
     parser.add_argument('--grad_clip', default=2., type=float, help='Gradient clipping threshold.')
     parser.add_argument('--optimizer', default='adam', type=str, help='optimizer. (adam|rmsprop)')
     parser.add_argument('--learning_rate', default=.001, type=float, help='Initial learning rate.')
@@ -64,6 +66,8 @@ def main():
 
     visual_info = 'feature_%s_embed_size_%d_no_imgnorm_%s' % (opt.feature, opt.embed_size, opt.no_imgnorm)
     loss_info = '%s_%s_margin_%.1f_max_violation_%s_%s' % (opt.loss, opt.measure, opt.margin, opt.max_violation, opt.cost_style)
+    if opt.loss == 'netrl':
+        loss_info += '_alpha_%.1f_margin_irel_%.2f' % (opt.alpha, opt.margin_irel)
     optimizer_info = '%s_lr_%.5f_%.2f_bs_%d' % ( opt.optimizer, opt.learning_rate, opt.lr_decay, opt.batch_size)
     data_argumentation_info = 'frame_stride_%s_video_prob_%.1f_perturb_intensity_%.5f_perturb_prob_%.2f' % (opt.stride, opt.aug_prob, opt.perturb_intensity, opt.perturb_prob)
 

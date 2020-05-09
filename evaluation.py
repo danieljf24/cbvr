@@ -1,6 +1,7 @@
 from __future__ import print_function
 import os
 import sys
+import csv
 import pickle
 
 import numpy
@@ -110,14 +111,45 @@ def encode_data(model, data_loader, log_step=10, logging=print):
     return video_embs, video_ids_list
 
 
+def cal_rel_index(rele_file):
+    with open(rele_file,'r') as csvfile:
+        data=[]
+        csv_reader=csv.reader(csvfile)
+        for line in csv_reader:
+            data.append(line)
+    return data
 
-def score2result(scores, test_video_list, cand_video_list):
+
+def re_cal_scores(scores, rel_index, n, sumofdata):
+
+    scores_list = []
+    for i, index in enumerate(rel_index):
+        data = []
+        data.append(scores[i])
+        if i < sumofdata:
+            for j in index[:n]:
+                data.append(scores[int(j)])
+            scores_list.append(sum(data) / len(data))
+        else:
+            scores_list.append(data)
+    
+    # test video has no available relations
+    scores_list.append(scores[len(rel_index): len(scores)])
+
+    return scores_list
+
+
+
+def score2result(scores, test_video_list, cand_video_list, rel_index, n):
     video2predrank = {}
     n_rows, n_column = scores.shape
     assert n_rows == len(test_video_list)
     assert n_column == len(cand_video_list)
     for i, test_video in enumerate(test_video_list):
         score_list = scores[i]
+        if rel_index is not None:
+            sumofdata = n_column - n_rows
+            score_list = re_cal_scores(score_list, rel_index, n, sumofdata)
         cand_video_score_list = zip(cand_video_list, score_list)
         sorted_cand_video_score_list = sorted(cand_video_score_list, key=lambda v:v[1], reverse=True)
         #video2predrank[test_video] = [x[0] for x in sorted_cand_video_score_list]
@@ -142,14 +174,14 @@ def score2result_fusion(scores, test_video_list, cand_video_list):
     return video2predrank
 
 
-def do_predict(test_video_emd, test_video_list, cand_video_emd, cand_video_list, output_dir=None, overwrite=0, no_imgnorm=False):
+def do_predict(test_video_emd, test_video_list, cand_video_emd, cand_video_list, rel_index=None, n=5, output_dir=None, overwrite=0, no_imgnorm=False):
 
     if no_imgnorm:
         scores = cal_score(test_video_emd, cand_video_emd, measure='cosine')
     else:
         scores = cal_score(test_video_emd, cand_video_emd, measure='dot')
 
-    video2predrank = score2result(scores, test_video_list, cand_video_list)
+    video2predrank = score2result(scores, test_video_list, cand_video_list, rel_index, n)
 
     if output_dir is not None:
         output_file = os.path.join(output_dir, 'pred_scores_matrix.pth.tar')

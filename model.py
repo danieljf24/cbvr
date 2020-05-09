@@ -82,21 +82,16 @@ class ContrastiveLoss(nn.Module):
     Compute contrastive loss
     """
 
-    def __init__(self, margin=0, measure=False, max_violation=False, cost_style='sum'):
+    def __init__(self, margin=0, max_violation=False, cost_style='sum'):
         super(ContrastiveLoss, self).__init__()
         self.margin = margin
         self.cost_style = cost_style
-        if  measure == 'cosine':
-            self.sim = cosine_sim
-        else:
-            print('measure %s is not supported')
-
         self.max_violation = max_violation
 
-    def forward(self, im, s):
+    def forward(self, scores):
         # compute image-sentence score matrix
-        scores = self.sim(im, s)
-        diagonal = scores.diag().view(im.size(0), 1)
+        # scores = self.sim(im, s)
+        diagonal = scores.diag().view(scores.size(0), 1)
         d1 = diagonal.expand_as(scores)
         d2 = diagonal.t().expand_as(scores)
 
@@ -127,11 +122,47 @@ class ContrastiveLoss(nn.Module):
         return cost
 
 
+class IrrelevantLoss(nn.Module):
+    """
+    Compute contrastive loss
+    """
+
+    def __init__(self, margin, cost_style='sum'):
+        super(IrrelevantLoss, self).__init__()
+        self.margin = margin
+        self.cost_style = cost_style
+
+    def forward(self, scores):
+
+        # clear diagonals
+        mask = torch.eye(scores.size(0)) > .5
+        I = Variable(mask)
+        if torch.cuda.is_available():
+            I = I.cuda()
+        scores = scores.masked_fill_(I, 0)
+
+        cost = (scores - self.margin).clamp(min=0)
+
+        if self.cost_style == 'sum':
+            cost = cost.sum()
+        elif self.cost_style == 'mean':
+            cost = cost.mean()
+        return cost
+
+
+
 class ReLearning(object):
 
     def __init__(self, opt):
         self.grad_clip = opt.grad_clip
         self.img_enc = EncoderVideo(opt)
+        self.loss = opt.loss
+
+
+        if  opt.measure == 'cosine':
+            self.sim = cosine_sim
+        else:
+            print('measure %s is not supported')
 
         print(self.img_enc)
         if torch.cuda.is_available():
@@ -139,11 +170,19 @@ class ReLearning(object):
             cudnn.benchmark = True
         
         # Loss and Optimizer
-        if opt.loss == 'mrl':
+        if opt.loss == 'trl':
             self.criterion = ContrastiveLoss(margin=opt.margin,
-                                             measure=opt.measure,
                                              max_violation=opt.max_violation,
                                              cost_style=opt.cost_style)
+
+
+        elif opt.loss == 'netrl':
+            self.criterion_1 = ContrastiveLoss(margin=opt.margin,
+                                               max_violation=opt.max_violation,
+                                               cost_style=opt.cost_style)
+            self.criterion_2 = IrrelevantLoss(margin=opt.margin_irel,
+                                              cost_style=opt.cost_style)
+            self.alpha = opt.alpha
 
 
         params = list(self.img_enc.parameters())
@@ -192,7 +231,18 @@ class ReLearning(object):
     def forward_loss(self, videos_emb_1, videos_emb_2, **kwargs):
         """Compute the loss given pairs of image and caption embeddings
         """
-        loss = self.criterion(videos_emb_1, videos_emb_2)
+        scores = self.sim(videos_emb_1, videos_emb_2)
+
+        if self.loss=='trl':
+            loss = self.criterion(scores)
+
+        elif self.loss == 'netrl':
+            loss_1 = self.criterion_1(scores)
+            loss_2 = self.criterion_2(scores)
+            # print loss_1, loss_2
+            loss = loss_1 + self.alpha * loss_2
+
+        # loss = self.criterion(videos_emb_1, videos_emb_2)
         # self.logger.update('Le', loss.data[0], videos_emb_1.size(0))
         return loss
 
@@ -212,7 +262,10 @@ class ReLearning(object):
         # self.optimizer.zero_grad()
         loss = self.forward_loss(videos_emb_1, videos_emb_2)
         # loss_value = loss.item()
-        loss_value = loss.data[0]
+        if torch.__version__ in ['1.0.0', '1.1.0','1.0.1'] :
+            loss_value = loss.item()
+        else:
+            loss_value = loss.data[0]
 
         # compute gradient and do SGD step
         loss.backward()

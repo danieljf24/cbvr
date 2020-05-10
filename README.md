@@ -1,7 +1,7 @@
 # Feature Re-Learning with Data Augmentation for Video Relevance Prediction
 
 
-The release source code of our TKDE paper [Feature Re-Learning with Data Augmentation for Content-based Video Recommendation](https://dl.acm.org/doi/abs/10.1145/3240508.3266441). We proposed a feature re-learning model enhanced by data augmentation that works for both frame-level and video-level features and negative-enhanced triplet ranking loss. It is also our winning entry for the [Hulu Content-based Video Relevance Prediction Challenge](https://github.com/cbvrp-acmmm-2018/cbvrp-acmmm-2018) at the ACM Multimedia 2018 conference. 
+The source code of our TKDE paper [Feature Re-Learning with Data Augmentation for Content-based Video Recommendation](https://dl.acm.org/doi/abs/10.1145/3240508.3266441). We proposed a feature re-learning model enhanced by data augmentation that works for both frame-level and video-level features and negative-enhanced triplet ranking loss. It is also our winning entry for the [Hulu Content-based Video Relevance Prediction Challenge](https://github.com/cbvrp-acmmm-2018/cbvrp-acmmm-2018) at the ACM Multimedia 2018 conference. 
 
 
 ## Requirements
